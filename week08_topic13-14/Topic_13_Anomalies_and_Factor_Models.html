@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINANCE 361 — Topic 13: Anomalies and Factor Models</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js (pinned to v4 to prevent breaking changes) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+
+    <style>
+        :root {
+            --primary:       #2563eb;
+            --primary-light: #eff6ff;
+            --text-dark:     #1e293b;
+            --text-light:    #64748b;
+            --border:        #e2e8f0;
+            --bg-gray:       #f8fafc;
+            --accent-green:  #16a34a;
+            --accent-amber:  #d97706;
+            --accent-red:    #dc2626;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        /* ── Header ── */
+        header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .instructor-avatar {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; flex-shrink: 0;
+        }
+
+        .header-text h1 { font-size: 1.75rem; margin: 0 0 0.3rem; color: var(--text-dark); line-height: 1.3; }
+        .instructor-name { font-size: 1rem; color: var(--primary); font-weight: 600; margin: 0 0 0.15rem; }
+        .course-meta { font-size: 0.85rem; color: var(--text-light); margin: 0; }
+
+        /* ── Typography ── */
+        section { margin-bottom: 2.5rem; }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 2.5rem; margin-bottom: 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 { font-size: 1.1rem; margin-top: 1.75rem; margin-bottom: 0.5rem; color: var(--primary); }
+
+        /* ── Callout boxes ── */
+        .math-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem 1.5rem;
+            margin: 1.25rem 0;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        .think-first-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--accent-amber);
+            padding: 1.1rem 1.4rem;
+            margin: 1.4rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .result-box {
+            background: #f0fdf4;
+            border-left: 4px solid var(--accent-green);
+            padding: 1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--accent-amber);
+            padding: 1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .danger-box {
+            background: #fff1f2;
+            border-left: 4px solid var(--accent-red);
+            padding: 1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .info-box {
+            background: var(--primary-light);
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+
+        /* ── Concept Check ── */
+        .concept-check {
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.4rem;
+            margin: 1.4rem 0;
+        }
+
+        .concept-check > p { font-weight: 600; margin: 0 0 1rem; }
+
+        .concept-check .options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .concept-check button {
+            background: white; border: 1px solid var(--border);
+            border-radius: 6px; padding: 0.65rem 1rem;
+            text-align: left; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .concept-check button:hover { border-color: var(--primary); background: var(--primary-light); }
+
+        .answer { margin-top: 0.6rem; padding: 0.65rem 1rem; border-radius: 6px; font-size: 0.875rem; }
+        .answer.correct   { background: #f0fdf4; border: 1px solid var(--accent-green); color: #166534; }
+        .answer.incorrect { background: #fff1f2; border: 1px solid var(--accent-red);   color: #991b1b; }
+
+        /* ── Code ── */
+        .code-container { border-radius: 8px; overflow: hidden; margin: 1.25rem 0; }
+        .code-container pre { margin: 0; overflow-x: auto; }
+        code { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.875rem; }
+
+        /* ── Factor model comparison table ── */
+        .model-table-wrap { overflow-x: auto; margin: 1.25rem 0; }
+
+        table.model-table {
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .model-table th {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 0.85rem;
+            border: 1px solid #1d4ed8;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .model-table th:first-child { text-align: left; min-width: 120px; }
+
+        .model-table td {
+            padding: 0.4rem 0.85rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .model-table td:first-child { text-align: left; font-weight: 600; color: var(--text-dark); }
+        .model-table tr:nth-child(odd)  { background: white; }
+        .model-table tr:nth-child(even) { background: var(--bg-gray); }
+        .model-table .check  { color: var(--accent-green); font-weight: 700; font-size: 1rem; }
+        .model-table .new    { color: var(--primary); font-weight: 700; font-size: 1rem; }
+        .model-table .dash   { color: #cbd5e1; }
+        .model-table .header-row th { background: #1e40af; }
+
+        /* ── Replication chart container ── */
+        .chart-outer {
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.25rem 0;
+        }
+
+        /* ── Anomaly tag cloud ── */
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 1rem 0;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 0.75rem;
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .anomaly-tag {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 99px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .anomaly-tag.cat-risk     { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+        .anomaly-tag.cat-value    { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+        .anomaly-tag.cat-momentum { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+        .anomaly-tag.cat-quality  { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+        .anomaly-tag.cat-trading  { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+
+        /* ── Timeline ── */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.55rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.58rem;
+            top: 0.45rem;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .timeline-year {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.1rem;
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .timeline-body { font-size: 0.875rem; color: var(--text-dark); margin-top: 0.2rem; }
+
+        /* ── Stat highlight ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label { font-size: 0.78rem; color: var(--text-light); }
+        .stat-number--red { color: var(--accent-red); }
+
+        /* ── Model comparison two-column grid (Section 4) ── */
+        .model-compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .model-compare-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .model-compare-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .model-compare-title--hxz { color: #1d4ed8; }
+        .model-compare-title--ff5 { color: #7c3aed; }
+
+        .math-box--compact { margin: 0.5rem 0; font-size: 0.85rem; }
+        .math-box--violet  { background: #f5f3ff; border-left-color: #7c3aed; }
+
+        .model-compare-list {
+            font-size: 0.82rem;
+            margin: 0.5rem 0 0 1.2rem;
+            padding: 0;
+        }
+
+        /* ── Three-column forces grid (Section 7) ── */
+        .forces-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .force-card {
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .force-card--green { border: 1px solid #bbf7d0; background: #f0fdf4; }
+        .force-card--amber { border: 1px solid #fde68a; background: #fffbeb; }
+        .force-card--red   { border: 1px solid #fecaca; background: #fff1f2; }
+
+        .force-card-title { font-weight: 700; margin-bottom: 0.4rem; }
+        .force-card-title--green { color: var(--accent-green); }
+        .force-card-title--amber { color: var(--accent-amber); }
+        .force-card-title--red   { color: var(--accent-red);   }
+
+        .force-card-body { font-size: 0.82rem; margin: 0; }
+
+        .spaced-list { line-height: 2.1; }
+
+        /* ── Collapsible ── */
+        details {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        details summary {
+            padding: 1.1rem 0;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        details[open] summary {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Footer ── */
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.25rem;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            body { padding: 0.75rem; }
+            .container { padding: 1.5rem; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .model-compare-grid { grid-template-columns: 1fr; }
+            .forces-grid { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; padding: 1.5rem; }
+            .concept-check .options { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ══════════════════════════════════════════════════
+         HEADER
+    ══════════════════════════════════════════════════ -->
+    <header>
+        <div class="instructor-avatar">👨‍🏫</div>
+        <div class="header-text">
+            <h1>FINANCE 361 — Topic 13: Anomalies and Factor Models</h1>
+            <p class="instructor-name">Dr. Zicheng (Leo) Xiao</p>
+            <p class="course-meta">University of Auckland &mdash; FINANCE 361: Modern Investment Theory</p>
+        </div>
+    </header>
+
+    <!-- Intro -->
+    <section>
+        <p>The CAPM failed empirically. In response, researchers built richer factor models — first the Fama-French 3-factor model, then a proliferating zoo of multi-factor models competing to explain the cross-section of stock returns. This "benchmark wars" arms race was driven by the discovery of hundreds of apparent <strong>anomalies</strong>: stock characteristics that predict returns even after accounting for standard risk factors. In this module we survey the landscape of factor models, dissect what an anomaly really is, and confront the uncomfortable finding that most anomalies do not survive rigorous replication.</p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 1: READINGS
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>1. Readings</h2>
+        <ul>
+            <li><strong>Required (up to Section 3.2):</strong> Hou, Xue &amp; Zhang (2018), "Replicating Anomalies", <em>Review of Financial Studies</em>. Available at: <a href="https://theinvestmentcapm.com" target="_blank" rel="noopener noreferrer">theinvestmentcapm.com</a></li>
+            <li>Harvey, Liu &amp; Zhu (2016), "… and the Cross-Section of Expected Returns", <em>Review of Financial Studies</em> — referenced for the anomaly taxonomy.</li>
+            <li>Geertsema &amp; Lu (2020), "The Correlation Structure of Anomaly Strategies", <em>Journal of Banking and Finance</em> — instructor's own research.</li>
+        </ul>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 2: AGENDA
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>2. What Are We Doing Today</h2>
+        <ul>
+            <li>Survey the main <strong>factor models</strong> used as benchmarks in empirical asset pricing</li>
+            <li>Understand what an <strong>anomaly</strong> is and why anomalies matter</li>
+            <li>Critically assess the replication crisis in anomaly research (Hou, Xue &amp; Zhang 2018)</li>
+        </ul>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 3: FAMA-FRENCH 3-FACTOR MODEL
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>3. Fama-French 3-Factor Model (FF3)</h2>
+
+        <p>One problem with the CAPM is that it appears to be poor at explaining the actual pattern of realised returns. Recall from Topic 12 that the APT provides a theoretical licence to go searching for empirical factors. Fama and French (1993) took this licence seriously and proposed the 3-factor model:</p>
+
+        <div class="math-box">
+            $$ E[r_i] - r^f = \alpha + \beta_{\text{MKT}} \cdot \text{MKTRF}_t + \beta_{\text{SMB}} \cdot \text{SMB}_t + \beta_{\text{HML}} \cdot \text{HML}_t + \varepsilon_t $$
+        </div>
+
+        <p>The three factors are:</p>
+
+        <ul>
+            <li><strong>MKTRF</strong> (\(r_m - r_f\)) — The market excess return. This is the single factor from the CAPM. <em>So far it looks just like the CAPM — but wait, there is more.</em></li>
+            <li><strong>SMB</strong> (Small Minus Big) — The return to a portfolio that is <em>long</em> small-capitalisation stocks and <em>short</em> large-capitalisation stocks. This captures the <strong>size premium</strong>.</li>
+            <li><strong>HML</strong> (High Minus Low) — The return to a portfolio that is <em>long</em> high book-to-market stocks and <em>short</em> low book-to-market stocks. This captures the <strong>value premium</strong>.</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>Construction detail:</strong> SMB and HML are not simple univariate sorts. They involve a <em>two-way</em> sort: stocks are independently sorted by size (2 groups) and by book-to-market (3 groups), creating 6 intersection portfolios. SMB and HML are constructed as weighted averages across these 6 portfolios. See Fama &amp; French (1993) for the precise construction.
+        </div>
+
+        <p>The Carhart (1997) model — also known as FFC4 — extends FF3 by adding a momentum factor:</p>
+
+        <div class="math-box">
+            $$ E[r_i] - r^f = \alpha + \beta_{\text{MKT}} \cdot \text{MKTRF}_t + \beta_{\text{SMB}} \cdot \text{SMB}_t + \beta_{\text{HML}} \cdot \text{HML}_t + \beta_{\text{UMD}} \cdot \text{UMD}_t + \varepsilon_t $$
+        </div>
+
+        <p>Where <strong>UMD</strong> (Up Minus Down) is the return to a portfolio long recent winners and short recent losers — the momentum factor.</p>
+
+        <div class="warning-box">
+            ⚠️ <strong>Important caveat:</strong> Unlike the CAPM, the Fama-French 3-factor model (and all its successors) is <em>not</em> derived from economic theory. It is a purely empirical description of patterns in average realised returns. The question of whether SMB, HML, and UMD represent compensation for <em>risk</em> or simply <em>mispricing</em> remains deeply contested.
+        </div>
+
+        <div class="concept-check" id="cc1">
+            <p>🧠 Concept Check: The HML factor in the Fama-French 3-factor model represents:</p>
+            <div class="options">
+                <button onclick="checkAnswer('cc1', this, false)">A. The return on high-momentum stocks minus low-momentum stocks.</button>
+                <button onclick="checkAnswer('cc1', this, true)">B. The return on high book-to-market ("value") stocks minus low book-to-market ("growth") stocks.</button>
+                <button onclick="checkAnswer('cc1', this, false)">C. The return on highly liquid stocks minus illiquid stocks.</button>
+                <button onclick="checkAnswer('cc1', this, false)">D. The return on high-leverage firms minus low-leverage firms.</button>
+            </div>
+            <div id="cc1-feedback" class="answer" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 4: BENCHMARK WARS
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>4. The Benchmark Wars</h2>
+
+        <p>Over time it became clear that FF3 was not the end of the story. Researchers found that FF3 still left many cross-sectional patterns unexplained. This triggered a race to build better benchmark models, leading to what can only be described as the <strong>"benchmark wars"</strong>.</p>
+
+        <!-- Timeline of models -->
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-year">1964 / 1972</div>
+                <div class="timeline-title">CAPM — Capital Asset Pricing Model</div>
+                <div class="timeline-body">Single factor: market excess return (MKTRF). Theoretically derived from mean-variance optimisation. Expected return is linear in market beta.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1993</div>
+                <div class="timeline-title">FF3 — Fama-French 3-Factor Model</div>
+                <div class="timeline-body">Adds SMB (size) and HML (value) to MKTRF. Purely empirical. Motivated by observed patterns in average returns that the CAPM could not explain.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1997</div>
+                <div class="timeline-title">FFC4 — Carhart 4-Factor Model</div>
+                <div class="timeline-body">Extends FF3 with UMD (momentum: Up Minus Down). Still widely used as a benchmark. Momentum has no consensus risk-based interpretation.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2015 (paper 2014)</div>
+                <div class="timeline-title">HXZ4 — Hou, Xue &amp; Zhang q-Factor Model</div>
+                <div class="timeline-body">Replaces HML with two new factors: I/A (Investment) and ROE (Return on Equity / profitability). Motivated by the investment CAPM — a theoretical framework. Drops HML.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2015</div>
+                <div class="timeline-title">FF5 — Fama-French 5-Factor Model</div>
+                <div class="timeline-body">Extends FF3 with CMA (investment) and RMW (profitability). Keeps HML, even though adding it makes little empirical difference. Competes directly with HXZ4.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2018</div>
+                <div class="timeline-title">FF6 — Fama-French 6-Factor Model</div>
+                <div class="timeline-body">Adds UMD (momentum) to FF5. Fama and French themselves acknowledge that UMD has no obvious risk-factor interpretation — yet include it for empirical coverage.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2020</div>
+                <div class="timeline-title">q5 — Hou, Xue &amp; Zhang q5 Model</div>
+                <div class="timeline-body">Extends HXZ4 with a fifth factor for expected profitability growth (\(\Delta\text{ROE}^e\)). Currently the most comprehensive model in the HXZ lineage. Appears to have the edge in explaining anomalies.</div>
+            </div>
+        </div>
+
+        <h3>Factor Model Comparison</h3>
+
+        <p>The table below shows which factors appear in each benchmark model. Use this as a reference when reading empirical papers:</p>
+
+        <div class="model-table-wrap">
+            <table class="model-table">
+                <thead>
+                    <tr>
+                        <th>Factor</th>
+                        <th>CAPM</th>
+                        <th>FF3</th>
+                        <th>FFC4</th>
+                        <th>HXZ4</th>
+                        <th>FF5</th>
+                        <th>FF6</th>
+                        <th>q5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>MKTRF — Market excess return</td>
+                        <td class="check">✓</td><td class="check">✓</td><td class="check">✓</td>
+                        <td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td>
+                    </tr>
+                    <tr>
+                        <td>SMB — Size (Small Minus Big)</td>
+                        <td class="dash">—</td><td class="check">✓</td><td class="check">✓</td>
+                        <td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td>
+                    </tr>
+                    <tr>
+                        <td>HML — Value (High Minus Low B/M)</td>
+                        <td class="dash">—</td><td class="check">✓</td><td class="check">✓</td>
+                        <td class="dash">—</td><td class="check">✓</td><td class="check">✓</td><td class="dash">—</td>
+                    </tr>
+                    <tr>
+                        <td>UMD — Momentum (Up Minus Down)</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="check">✓</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="check">✓</td><td class="dash">—</td>
+                    </tr>
+                    <tr>
+                        <td>I/A — Investment (HXZ notation)</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="dash">—</td>
+                        <td class="new">✦</td><td class="dash">—</td><td class="dash">—</td><td class="new">✦</td>
+                    </tr>
+                    <tr>
+                        <td>ROE — Profitability (HXZ notation)</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="dash">—</td>
+                        <td class="new">✦</td><td class="dash">—</td><td class="dash">—</td><td class="new">✦</td>
+                    </tr>
+                    <tr>
+                        <td>CMA — Investment (Conservative − Aggressive)</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="dash">—</td>
+                        <td class="dash">—</td><td class="new">✦</td><td class="new">✦</td><td class="dash">—</td>
+                    </tr>
+                    <tr>
+                        <td>RMW — Profitability (Robust − Weak)</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="dash">—</td>
+                        <td class="dash">—</td><td class="new">✦</td><td class="new">✦</td><td class="dash">—</td>
+                    </tr>
+                    <tr>
+                        <td>\(\Delta\text{ROE}^e\) — Expected profitability growth</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="dash">—</td>
+                        <td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="new">✦</td>
+                    </tr>
+                    <tr style="background: #f8f4ff; font-style: italic;">
+                        <td>Total factors</td>
+                        <td>1</td><td>3</td><td>4</td><td>4</td><td>5</td><td>6</td><td>5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p style="font-size:0.75rem; color:var(--text-light);">✓ = factor present from predecessor model &nbsp;|&nbsp; ✦ = new factor added in this model &nbsp;|&nbsp; — = factor not included</p>
+
+        <h3>HXZ4 vs. FF5: Similar Solutions, Different Philosophy</h3>
+
+        <div class="model-compare-grid">
+            <div class="model-compare-card">
+                <div class="model-compare-title model-compare-title--hxz">HXZ4 / q-factor</div>
+                <div class="math-box math-box--compact">
+                    $$ \alpha + \beta_{\text{MKT}} + \beta_{\text{SMB}} + \beta_{I/A} + \beta_{\text{ROE}} $$
+                </div>
+                <ul class="model-compare-list">
+                    <li>Drops HML entirely</li>
+                    <li>Motivated by the investment CAPM (theoretical foundation)</li>
+                    <li>Appears to have the edge in explaining anomalies</li>
+                </ul>
+            </div>
+            <div class="model-compare-card">
+                <div class="model-compare-title model-compare-title--ff5">FF5 / 5-factor</div>
+                <div class="math-box math-box--compact math-box--violet">
+                    $$ \alpha + \beta_{\text{MKT}} + \beta_{\text{SMB}} + \beta_{\text{HML}} + \beta_{\text{CMA}} + \beta_{\text{RMW}} $$
+                </div>
+                <ul class="model-compare-list">
+                    <li>Keeps HML "for continuity", despite it adding little</li>
+                    <li>Still purely empirical — no theoretical foundation</li>
+                    <li>Currently the dominant benchmark in academic finance journals</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="danger-box">
+            🔑 <strong>Key Philosophical Point:</strong> Both FF models and HXZ models are evaluated on their ability to explain <em>average realised returns</em>. But realised returns ≠ expected returns (behavioural finance gives us many reasons to believe they are different). If you want to explain patterns in average realised returns → use FF5 or HXZ. If you want a model of equilibrium required returns → the CAPM or a variant remains the most sensible starting point, despite its empirical failings.
+        </div>
+
+        <div class="concept-check" id="cc2">
+            <p>🧠 Concept Check: The key difference between HXZ4 and FF5 is:</p>
+            <div class="options">
+                <button onclick="checkAnswer('cc2', this, false)">A. HXZ4 has more factors than FF5.</button>
+                <button onclick="checkAnswer('cc2', this, true)">B. HXZ4 drops HML and uses I/A + ROE in its place; FF5 keeps HML and adds CMA + RMW.</button>
+                <button onclick="checkAnswer('cc2', this, false)">C. FF5 is theoretically derived; HXZ4 is purely empirical.</button>
+                <button onclick="checkAnswer('cc2', this, false)">D. HXZ4 includes the momentum factor UMD; FF5 does not.</button>
+            </div>
+            <div id="cc2-feedback" class="answer" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 5: ANOMALIES
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>5. Anomalies</h2>
+
+        <h3>What Is an Anomaly?</h3>
+
+        <p>Back when researchers trusted their models (circa 1970), they would occasionally encounter a variable that predicted stock returns when theory said it shouldn't. They called these deviations <em>"anomalies"</em> — implying the data was wrong and the model must be right.</p>
+
+        <p>The terminology has stuck, but the meaning has evolved:</p>
+
+        <div class="info-box">
+            <strong>Modern Definition:</strong> An anomaly is a sorted portfolio trading strategy that earns positive risk-adjusted returns even after controlling for standard benchmark models (CAPM, FF3, or FF5). More precisely, an anomaly is evidence that some characteristic \(x\) predicts returns in a way that existing benchmark models cannot explain.
+        </div>
+
+        <p>The term "anomaly" can refer to three related but distinct things:</p>
+
+        <ol>
+            <li><strong>A firm-level characteristic</strong> — e.g. firm profitability, asset growth, accruals. Used to construct the sorting variable.</li>
+            <li><strong>A factor loading / regression beta</strong> — e.g. beta on market volatility, or on credit spread changes. The sorting variable is constructed by running a time-series regression for each firm.</li>
+            <li><strong>The resulting trading strategy time-series</strong> — the 5M1 portfolio return series itself (e.g. RMW is both an anomaly <em>and</em> a factor in FF5).</li>
+        </ol>
+
+        <div class="result-box">
+            💡 <strong>"If You Can't Beat Them, Co-opt Them":</strong> Most benchmark factors — SMB, HML, RMW, CMA, UMD — started life as anomalies. Researchers incorporated them into benchmark models, transforming "anomalies" into "risk factors". Ideally the new factor has some interpretation as a priced source of systematic risk, but this bar has become increasingly low. UMD (momentum), for instance, has no obvious risk-based interpretation and yet features in multiple benchmark models.
+        </div>
+
+        <h3>The Embarrassment of Riches: Harvey, Liu &amp; Zhu (2016)</h3>
+
+        <p>Harvey, Liu &amp; Zhu (2016) documented an explosion in the number of published factors and anomalies. Below is a sample of what they catalogue — scroll to browse the full list:</p>
+
+        <p style="font-size:0.82rem; color:var(--text-light); margin-bottom:0.5rem;">Colour coding: 
+            <span class="anomaly-tag cat-risk">Risk / volatility</span> &nbsp;
+            <span class="anomaly-tag cat-value">Value / fundamentals</span> &nbsp;
+            <span class="anomaly-tag cat-momentum">Momentum / returns</span> &nbsp;
+            <span class="anomaly-tag cat-quality">Profitability / quality</span> &nbsp;
+            <span class="anomaly-tag cat-trading">Trading / liquidity</span>
+        </p>
+
+        <div class="tag-cloud" id="anomalyCloud"></div>
+
+        <p style="font-size:0.78rem; color:var(--text-light); margin-top:0.4rem;">Selected anomalies from Harvey, Liu &amp; Zhu (2016). The full paper documents hundreds more.</p>
+
+        <h3>Geertsema &amp; Lu (2020) — The Correlation Structure of Anomalies</h3>
+
+        <p>A key question is: are these hundreds of anomalies really distinct? Or are many of them measuring the same underlying phenomenon?</p>
+
+        <p>Geertsema &amp; Lu (2020) applied <strong>hierarchical clustering</strong> to the correlation matrix of anomaly strategy returns. Their findings:</p>
+
+        <ul>
+            <li>The monthly returns of anomalies within the same cluster have an average pairwise correlation of <strong>0.57</strong> — they largely move together.</li>
+            <li>The average correlation <em>between</em> cluster strategies is only <strong>0.036</strong> — very different clusters are nearly uncorrelated.</li>
+            <li>The ex ante categorisation used by HXZ (2018) into 6 theory-based categories does not reliably predict which anomalies behave similarly. The within-category correlations in HXZ range from 0.07 to 0.60; the within-cluster correlations in Geertsema &amp; Lu range from 0.41 to 0.89 — the data-driven clusters are much more internally coherent.</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>Implication:</strong> Many of the hundreds of documented anomalies are likely picking up the same few underlying economic forces. Clustering analysis can help reduce the effective dimensionality of the anomaly "zoo".
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 6: HOU, XUE & ZHANG (2018)
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>6. Hou, Xue &amp; Zhang (2018) — "Replicating Anomalies"</h2>
+
+        <blockquote style="border-left: 4px solid var(--border); margin: 1.25rem 0; padding: 0.75rem 1.5rem; font-style: italic; color: var(--text-dark); background: var(--bg-gray); border-radius: 0 8px 8px 0;">
+            "Most anomalies fail to hold up to currently acceptable standards for empirical finance. With microcaps mitigated via NYSE breakpoints and value-weighted returns, 65% of the 452 anomalies in our extensive data library, including 96% of the trading frictions category, cannot clear the single test hurdle of the absolute t-value of 1.96. Imposing the higher multiple test hurdle of 2.78 at the 5% significance level raises the failure rate to 82%... In all, capital markets are more efficient than previously recognized."
+            <br><br>— Hou, Xue &amp; Zhang (2018, <em>RFS</em>)
+        </blockquote>
+
+        <p>This is a landmark <strong>replication study</strong>. Replication is a cornerstone of science, yet replication studies are rarely published — journals prefer new results. HXZ (2018) attempted to replicate 452 anomalies from the literature and found that the vast majority could not be confirmed.</p>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-number stat-number--red">452</div>
+                <div class="stat-label">Anomalies attempted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number stat-number--red">65%</div>
+                <div class="stat-label">Fail single test (|t| &lt; 1.96) — NYSE-VW</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number stat-number--red">82%</div>
+                <div class="stat-label">Fail multiple test (|t| &lt; 2.78) — NYSE-VW</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number stat-number--red">96%</div>
+                <div class="stat-label">Trading frictions anomalies fail</div>
+            </div>
+        </div>
+
+        <h3>Replication Rate Chart (HXZ 2018, Figure 2)</h3>
+
+        <p>The chart below replicates the key finding from Figure 2 of Hou, Xue &amp; Zhang (2018). The <strong>replication rate</strong> is the percentage of anomalies that achieve statistical significance under each methodology. Two key methodological choices drive the results:</p>
+
+        <ol>
+            <li><strong>Breakpoints:</strong> NYSE-only (stricter — excludes micro-cap dominated quantile breaks) vs. All stocks</li>
+            <li><strong>Portfolio weighting:</strong> Value-weighted (VW — weights by market cap) vs. Equal-weighted (EW — all stocks equal weight)</li>
+        </ol>
+
+        <div class="chart-outer">
+            <canvas id="replicationChart" style="max-height: 320px;"></canvas>
+            <p style="font-size:0.75rem; color:var(--text-light); margin-top:0.75rem; text-align:center;">
+                Source: Hou, Xue &amp; Zhang (2018), Figure 2, Panel A (extended samples, Jan 1967–Dec 2016). Blue = single test (|t|≥1.96); grey = multiple test (|t|≥2.78 at 5% level).
+            </p>
+        </div>
+
+        <div class="think-first-box">
+            <span>🤔</span> <strong>Think First:</strong> Look at the replication rates for NYSE-VW (strictest methodology) versus All-EW (most lenient). Why would value-weighted returns with NYSE breakpoints produce much lower replication rates? What types of stocks drive the difference?
+        </div>
+
+        <details>
+            <summary>Answer: The Microcap Problem</summary>
+            <p><strong>Microcaps</strong> are stocks in the bottom 20% of NYSE stocks sorted by market capitalisation each month. They are:</p>
+            <ul>
+                <li>Very <strong>small</strong> and <strong>illiquid</strong></li>
+                <li>Very <strong>numerous</strong> — they make up a disproportionate share of all listed stocks by count</li>
+                <li>Associated with <strong>very high equal-weighted returns</strong> (partly due to bid-ask bounce, illiquidity premia, and data errors)</li>
+            </ul>
+            <p>When you use <em>all-stock breakpoints + equal weighting</em>, microcaps dominate the extreme portfolios and inflate apparent returns. With <em>NYSE breakpoints + value weighting</em>, microcaps contribute little to portfolio returns and the extreme portfolios contain only genuinely different large stocks. The anomaly signal largely disappears for most strategies once this methodological bias is corrected.</p>
+        </details>
+
+        <h3>Typical Sample Construction in Contemporary Finance Research</h3>
+
+        <p>Based on HXZ (2018) and current best practice, a typical empirical finance study uses:</p>
+
+        <div class="code-container">
+<pre><code class="language-python">import pandas as pd
+
+# Load raw CRSP monthly data
+crsp = pd.read_parquet('crsp_monthly.parquet')
+
+# ── 1. Keep only common domestic US stocks ─────────────────────────────────
+# CRSP share codes: 10 = ordinary common share, 11 = ordinary common share
+crsp = crsp[crsp['shrcd'].isin([10, 11])]
+
+# ── 2. Listed on NYSE, AMEX, or NASDAQ ─────────────────────────────────────
+# CRSP exchange codes: 1 = NYSE, 2 = AMEX, 3 = NASDAQ
+crsp = crsp[crsp['exchcd'].isin([1, 2, 3])]
+
+# ── 3. Require non-missing returns and market cap ───────────────────────────
+crsp = crsp.dropna(subset=['ret', 'mktcap'])
+
+# ── 4. Compute NYSE size breakpoints (20th percentile = microcap threshold) ─
+nyse = crsp[crsp['exchcd'] == 1].copy()
+nyse_p20 = nyse.groupby('date')['mktcap'].quantile(0.20).rename('nyse_p20')
+crsp = crsp.merge(nyse_p20, on='date')
+
+# ── 5. Flag microcaps ────────────────────────────────────────────────────────
+crsp['is_microcap'] = crsp['mktcap'] < crsp['nyse_p20']
+
+# For value-weighted results, drop microcaps explicitly:
+sample_vw = crsp[~crsp['is_microcap']].copy()
+# For equal-weighted results with NYSE breakpoints, keep all but
+# use NYSE-only stocks to calculate quantile breakpoints.
+
+# ── Optional: Drop finance and utilities ────────────────────────────────────
+# CRSP / Compustat SIC codes:
+# Finance firms: 6000-6999, Utilities: 4900-4999
+crsp = crsp[~crsp['sic'].between(6000, 6999)]  # optional
+crsp = crsp[~crsp['sic'].between(4900, 4999)]  # optional
+
+print(f"Final sample: {crsp.shape[0]:,} stock-month observations")
+# In practice, less than half of all listed stocks survive these filters.
+</code></pre>
+        </div>
+
+        <div class="result-box">
+            <strong>Takeaway:</strong> A rigorous anomaly study should:
+            <ol style="margin-top: 0.5rem; margin-bottom: 0;">
+                <li>Use <strong>NYSE breakpoints</strong> to avoid microcap contamination</li>
+                <li>Report <strong>value-weighted returns</strong> (equal-weighted as a robustness check)</li>
+                <li>Apply the <strong>multiple-testing correction</strong> |t| ≥ 2.78 rather than the naive 1.96 threshold</li>
+                <li>Verify results over the <strong>extended sample</strong>, not just the original study period</li>
+            </ol>
+        </div>
+
+        <div class="concept-check" id="cc3">
+            <p>🧠 Concept Check: Hou, Xue &amp; Zhang (2018) find that 65% of anomalies "fail to replicate" using NYSE breakpoints and value-weighted returns. What is the main reason this stricter methodology produces lower replication rates?</p>
+            <div class="options">
+                <button onclick="checkAnswer('cc3', this, false)">A. NYSE stocks have lower average returns than NASDAQ stocks.</button>
+                <button onclick="checkAnswer('cc3', this, true)">B. Many anomalies are driven by microcap stocks, which have inflated equal-weighted returns but tiny market caps; value-weighting and NYSE breakpoints remove this bias.</button>
+                <button onclick="checkAnswer('cc3', this, false)">C. The value-weighting methodology is mathematically incorrect.</button>
+                <button onclick="checkAnswer('cc3', this, false)">D. NYSE breakpoints result in fewer stocks per quintile, reducing statistical power.</button>
+            </div>
+            <div id="cc3-feedback" class="answer" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 7: FINAL THOUGHTS
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>7. Final Thoughts</h2>
+
+        <p>Trying to understand the factors driving average returns is an ongoing project. The main difficulty is untangling three confounding forces:</p>
+
+        <div class="forces-grid">
+            <div class="force-card force-card--green">
+                <div class="force-card-title force-card-title--green">✅ Risk Compensation</div>
+                <p class="force-card-body">Compensation for bearing systematic risk. <em>Should</em> be in benchmark pricing models. E.g., the size premium reflects the higher distress risk of small firms.</p>
+            </div>
+            <div class="force-card force-card--amber">
+                <div class="force-card-title force-card-title--amber">⚠️ Predictable Mispricing</div>
+                <p class="force-card-body">Persistent behavioural biases or institutional constraints that prevent prices from reflecting true fundamental value. <em>Should not</em> be in benchmark models — it represents genuine alpha.</p>
+            </div>
+            <div class="force-card force-card--red">
+                <div class="force-card-title force-card-title--red">❌ Data Mining</div>
+                <p class="force-card-body">"Results" obtained by fitting models to noise through brute force — running thousands of regressions until something looks significant. <em>Should not</em> be in any model. HXZ (2018) suggest this is responsible for a large fraction of published anomalies.</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Looking Forward — Machine Learning:</strong> In terms of return predictability, research interest has increasingly moved toward more powerful approaches from <strong>machine learning</strong>. Methods like random forests, gradient boosting, and deep neural networks can simultaneously consider hundreds of characteristics and their interactions in ways that traditional sorted portfolio methodology cannot. This will be the subject of a future topic.
+        </div>
+
+        <h3>Summary: Where Does This Leave Us?</h3>
+
+        <ul class="spaced-list">
+            <li>The CAPM is theoretically elegant but empirically weak.</li>
+            <li>Multi-factor models (FF3, FF5, HXZ4) do better at explaining cross-sectional variation in realised returns — but are <em>purely empirical</em>, not theoretical.</li>
+            <li>Hundreds of "anomalies" have been reported; most do not survive rigorous replication.</li>
+            <li>The benchmark wars continue: HXZ models appear to have the edge for explaining anomalies; the CAPM remains the starting point for estimating required returns in corporate finance and valuation.</li>
+            <li>Rigorous methodology — NYSE breakpoints, value-weighted returns, multiple-testing correction — is essential to separate genuine signal from noise.</li>
+        </ul>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         COLAB SECTION
+    ══════════════════════════════════════════════════ -->
+    <section id="colab-section">
+        <h2>🐍 Run the Code in Google Colab</h2>
+
+        <p>The companion notebook lets you run all Python code from this topic interactively — no local installation required. It includes:</p>
+        <ul>
+            <li>Downloading real Fama-French factor data (MKTRF, SMB, HML, RMW, CMA, UMD) from Ken French's website</li>
+            <li>Comparing CAPM, FF3, FFC4, and FF5 alphas on a momentum test portfolio</li>
+            <li>Simulating and visualising the <strong>microcap bias</strong> (EW vs VW, All vs NYSE breakpoints)</li>
+            <li>Recreating the HXZ (2018) replication rate bar chart</li>
+            <li>Factor correlation heatmap</li>
+            <li>CRSP-style sample construction filter walkthrough</li>
+        </ul>
+
+        <div style="background: var(--bg-gray); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin: 1.25rem 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <a id="colab-link-13"
+                   href="https://colab.research.google.com/github/Leonop/FINANCE-361-S1-2026/blob/main/week08_topic13-14/FIN361_Topic13_Anomalies_Factor_Models.ipynb"
+                   target="_blank" rel="noopener noreferrer"
+                   style="display:inline-flex; align-items:center; gap:0.5rem; background:#f9ab00; color:#1a1a1a;
+                          font-weight:700; font-size:0.95rem; padding:0.6rem 1.2rem; border-radius:6px;
+                          text-decoration:none;">
+                    <img src="https://colab.research.google.com/assets/colab-badge.svg"
+                         alt="Open in Colab" style="height:20px; vertical-align:middle;">
+                    &nbsp;Open Notebook in Colab
+                </a>
+                <a href="FIN361_Topic13_Anomalies_Factor_Models.ipynb" download
+                   style="display:inline-flex; align-items:center; gap:0.5rem; background:white;
+                          border:1px solid var(--border); color:var(--primary); font-weight:600;
+                          font-size:0.9rem; padding:0.6rem 1.1rem; border-radius:6px; text-decoration:none;">
+                    ⬇ Download .ipynb
+                </a>
+            </div>
+
+            <p style="font-size:0.8rem; color:var(--text-light); margin-top:0.9rem; margin-bottom:0;">
+                ✅ <strong>Link is live</strong> — hosted at
+                <a href="https://github.com/Leonop/FINANCE-361-S1-2026" target="_blank" rel="noopener noreferrer" style="color:var(--primary);">github.com/Leonop/FINANCE-361-S1-2026</a>.
+                Students each get their own private copy when they click the button above.
+            </p>
+        </div>
+
+    </section>
+
+    <footer>
+        <p>FINANCE 361: Modern Investment Theory &mdash; University of Auckland</p>
+        <p>© Dr. Zicheng (Leo) Xiao &nbsp;|&nbsp; University of Auckland &nbsp;|&nbsp; FINANCE 361</p>
+    </footer>
+
+</div><!-- /.container -->
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+/* ── Anomaly tag cloud ─────────────────────────────────────────────────── */
+const anomalies = [
+    { name: 'Total volatility',         cat: 'cat-risk' },
+    { name: 'Idiosyncratic volatility', cat: 'cat-risk' },
+    { name: 'Distress risk',            cat: 'cat-risk' },
+    { name: 'Beta squared',             cat: 'cat-risk' },
+    { name: 'Downside risk',            cat: 'cat-risk' },
+    { name: 'Coskewness',               cat: 'cat-risk' },
+    { name: 'Jump beta',                cat: 'cat-risk' },
+    { name: 'Credit rating',            cat: 'cat-risk' },
+    { name: 'Short-run volatility',     cat: 'cat-risk' },
+    { name: 'Long-run volatility',      cat: 'cat-risk' },
+    { name: 'Systematic volatility',    cat: 'cat-risk' },
+    { name: 'Extreme downside risk',    cat: 'cat-risk' },
+    { name: 'Book-to-market ratio',     cat: 'cat-value' },
+    { name: 'Earnings-to-price',        cat: 'cat-value' },
+    { name: 'Cash flow-to-price',       cat: 'cat-value' },
+    { name: 'Dividend yield',           cat: 'cat-value' },
+    { name: 'Firm size',                cat: 'cat-value' },
+    { name: 'Long-term reversal',       cat: 'cat-value' },
+    { name: 'Asset growth',             cat: 'cat-value' },
+    { name: 'Investment',               cat: 'cat-value' },
+    { name: 'Payout yield',             cat: 'cat-value' },
+    { name: 'Net financing',            cat: 'cat-value' },
+    { name: 'Goodwill impairment',      cat: 'cat-value' },
+    { name: 'R&D capital',              cat: 'cat-value' },
+    { name: 'Momentum',                 cat: 'cat-momentum' },
+    { name: '52-week high',             cat: 'cat-momentum' },
+    { name: 'Return reversal',          cat: 'cat-momentum' },
+    { name: 'Industry momentum',        cat: 'cat-momentum' },
+    { name: 'Time-series momentum',     cat: 'cat-momentum' },
+    { name: 'Earnings announcement return', cat: 'cat-momentum' },
+    { name: 'Acceleration',             cat: 'cat-momentum' },
+    { name: 'Return consistency',       cat: 'cat-momentum' },
+    { name: 'Gross profitability',      cat: 'cat-quality' },
+    { name: 'Return on equity',         cat: 'cat-quality' },
+    { name: 'Accruals',                 cat: 'cat-quality' },
+    { name: 'Earnings quality',         cat: 'cat-quality' },
+    { name: 'Profitability',            cat: 'cat-quality' },
+    { name: 'Organizational capital',   cat: 'cat-quality' },
+    { name: 'Earnings growth',          cat: 'cat-quality' },
+    { name: 'Financial distress',       cat: 'cat-quality' },
+    { name: 'Analyst dispersion',       cat: 'cat-quality' },
+    { name: 'DuPont analysis',          cat: 'cat-quality' },
+    { name: 'Innovative efficiency',    cat: 'cat-quality' },
+    { name: 'Short interest',           cat: 'cat-trading' },
+    { name: 'Illiquidity',              cat: 'cat-trading' },
+    { name: 'Trading volume',           cat: 'cat-trading' },
+    { name: 'Price delay',              cat: 'cat-trading' },
+    { name: 'Bid-ask spread',           cat: 'cat-trading' },
+    { name: 'Order imbalance',          cat: 'cat-trading' },
+    { name: 'Institutional holding',    cat: 'cat-trading' },
+    { name: 'Breadth of ownership',     cat: 'cat-trading' },
+    { name: 'Short-sale constraints',   cat: 'cat-trading' },
+    { name: 'Option-to-stock volume',   cat: 'cat-trading' },
+];
+
+const cloud = document.getElementById('anomalyCloud');
+anomalies.forEach(a => {
+    const span = document.createElement('span');
+    span.className = `anomaly-tag ${a.cat}`;
+    span.textContent = a.name;
+    cloud.appendChild(span);
+});
+
+/* ── Replication rate chart ────────────────────────────────────────────── */
+const ctx = document.getElementById('replicationChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [
+            ['FM-OLS', '(OLS cross-sectional)'],
+            ['FM-WLS', '(WLS cross-sectional)'],
+            ['All-EW', '(All stocks, equal-wt)'],
+            ['All-VW', '(All stocks, value-wt)'],
+            ['NYSE-EW', '(NYSE breaks, equal-wt)'],
+            ['NYSE-VW', '(NYSE breaks, value-wt)'],
+        ],
+        datasets: [
+            {
+                label: 'Single test (|t| ≥ 1.96)',
+                data: [33.6, 58.2, 56.4, 58.6, 40.7, 35.0],
+                backgroundColor: 'rgba(37,99,235,0.75)',
+                borderColor: '#2563eb',
+                borderWidth: 1,
+                borderRadius: 3,
+            },
+            {
+                label: 'Multiple test (|t| ≥ 2.78)',
+                data: [13.3, 48.5, 46.7, 48.0, 22.1, 17.9],
+                backgroundColor: 'rgba(100,116,139,0.75)',
+                borderColor: '#64748b',
+                borderWidth: 1,
+                borderRadius: 3,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+            x: {
+                title: { display: true, text: 'Replication rate (% of 452 anomalies)' },
+                min: 0, max: 70,
+                ticks: { callback: v => v + '%' }
+            },
+            y: { grid: { display: false } }
+        },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)}%`
+                }
+            }
+        }
+    }
+});
+
+/* ── Concept checks ────────────────────────────────────────────────────── */
+const feedbacks = {
+    cc1: {
+        correct:   '✓ Correct! HML stands for High Minus Low — it is long stocks with a high book-to-market ratio (value stocks) and short stocks with a low book-to-market ratio (growth stocks).',
+        incorrect: 'Not quite. HML = High Minus Low book-to-market. It captures the value premium — the tendency of cheap (high B/M) stocks to outperform expensive (low B/M) stocks on average.'
+    },
+    cc2: {
+        correct:   '✓ Correct! Both models address the same empirical gap (investment and profitability) but using different factor constructions. HXZ drops HML; FF5 retains it. Both models have 4–5 factors total.',
+        incorrect: 'Not quite. HXZ4 and FF5 both have 4–5 factors. The key difference is in which factors they include: HXZ drops HML and uses I/A + ROE; FF5 keeps HML and adds CMA + RMW.'
+    },
+    cc3: {
+        correct:   '✓ Correct! Most "anomalies" are concentrated in microcap stocks. Equal-weighting gives these tiny stocks the same weight as large stocks, inflating the apparent anomaly return. Value-weighting makes large stocks dominate, removing the microcap effect. NYSE breakpoints ensure the extreme quintiles are not full of tiny NASDAQ/AMEX microcaps.',
+        incorrect: 'Not quite. The core issue is microcap stocks — they are numerous, illiquid, and have inflated equal-weighted returns. NYSE-VW methodology removes this distortion, causing most apparent anomalies to disappear.'
+    }
+};
+
+/* ── Colab link setter ─────────────────────────────────────────────────── */
+function setColabLink(inputId, linkId) {
+    const raw = document.getElementById(inputId).value.trim();
+    if (!raw) { alert('Please paste a URL first.'); return; }
+    let url = raw;
+    if (url.includes('github.com') && !url.includes('colab.research.google.com')) {
+        url = url.replace('https://github.com/', 'https://colab.research.google.com/github/');
+    }
+    document.getElementById(linkId).href = url;
+    document.getElementById(linkId).style.background = '#16a34a';
+    document.getElementById(linkId).style.color = 'white';
+    alert('✅ Colab link updated! Click the button to open the notebook.');
+}
+
+function checkAnswer(id, btn, isCorrect) {
+    const container = document.getElementById(id);
+    const feedback  = document.getElementById(id + '-feedback');
+    const fb = feedbacks[id];
+
+    container.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.cursor = 'default'; });
+
+    if (isCorrect) {
+        btn.style.background = '#f0fdf4';
+        btn.style.borderColor = '#16a34a';
+        btn.style.color = '#166534';
+        feedback.className = 'answer correct';
+        feedback.innerHTML = fb.correct;
+    } else {
+        btn.style.background = '#fff1f2';
+        btn.style.borderColor = '#dc2626';
+        btn.style.color = '#991b1b';
+        feedback.className = 'answer incorrect';
+        feedback.innerHTML = fb.incorrect;
+    }
+    feedback.style.display = 'block';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINANCE 361 — Topic 14: Financial Machine Learning</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Chart.js pinned to v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+
+    <style>
+        :root {
+            --primary:       #2563eb;
+            --primary-light: #eff6ff;
+            --text-dark:     #1e293b;
+            --text-light:    #64748b;
+            --border:        #e2e8f0;
+            --bg-gray:       #f8fafc;
+            --accent-green:  #16a34a;
+            --accent-amber:  #d97706;
+            --accent-red:    #dc2626;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        /* ── Header ── */
+        header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .instructor-avatar {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; flex-shrink: 0;
+        }
+
+        .header-text h1 { font-size: 1.75rem; margin: 0 0 0.3rem; color: var(--text-dark); line-height: 1.3; }
+        .instructor-name { font-size: 1rem; color: var(--primary); font-weight: 600; margin: 0 0 0.15rem; }
+        .course-meta { font-size: 0.85rem; color: var(--text-light); margin: 0; }
+
+        /* ── Typography ── */
+        section { margin-bottom: 2.5rem; }
+        h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+        h3 { font-size: 1.1rem; margin-top: 1.75rem; margin-bottom: 0.5rem; color: var(--primary); }
+
+        /* ── Callout boxes ── */
+        .math-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem 1.5rem;
+            margin: 1.25rem 0;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        .think-first-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--accent-amber);
+            padding: 1.1rem 1.4rem;
+            margin: 1.4rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .result-box {
+            background: #f0fdf4;
+            border-left: 4px solid var(--accent-green);
+            padding: 1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--accent-amber);
+            padding: 1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .danger-box {
+            background: #fff1f2;
+            border-left: 4px solid var(--accent-red);
+            padding: 1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .info-box {
+            background: var(--primary-light);
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+
+        /* ── AI Demo box ── */
+        .ai-demo-box {
+            background: #f0f9ff;
+            border: 1px solid #7dd3fc;
+            border-left: 4px solid #0284c7;
+            border-radius: 0 8px 8px 0;
+            padding: 1.1rem 1.4rem;
+            margin: 1.4rem 0;
+        }
+
+        .ai-demo-box .ai-tag {
+            display: inline-block;
+            background: #0284c7;
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            margin-right: 0.4rem;
+            letter-spacing: 0.03em;
+        }
+
+        /* ── AI critique box ── */
+        .ai-critique-box {
+            background: #fff1f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid var(--accent-red);
+            border-radius: 0 8px 8px 0;
+            padding: 1.1rem 1.4rem;
+            margin: 1.4rem 0;
+        }
+
+        /* ── Concept Check ── */
+        .concept-check {
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.4rem;
+            margin: 1.4rem 0;
+        }
+
+        .concept-check > p { font-weight: 600; margin: 0 0 1rem; }
+        .concept-check .options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .concept-check button {
+            background: white; border: 1px solid var(--border);
+            border-radius: 6px; padding: 0.65rem 1rem;
+            text-align: left; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .concept-check button:hover { border-color: var(--primary); background: var(--primary-light); }
+
+        .answer { margin-top: 0.6rem; padding: 0.65rem 1rem; border-radius: 6px; font-size: 0.875rem; }
+        .answer.correct   { background: #f0fdf4; border: 1px solid var(--accent-green); color: #166534; }
+        .answer.incorrect { background: #fff1f2; border: 1px solid var(--accent-red);   color: #991b1b; }
+
+        /* ── Code ── */
+        .code-container { border-radius: 8px; overflow: hidden; margin: 1.25rem 0; }
+        .code-container pre { margin: 0; overflow-x: auto; }
+        code { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.875rem; }
+
+        /* ── ML Taxonomy ── */
+        .ml-taxonomy {
+            position: relative;
+            margin: 1.5rem auto;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .tax-ring {
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 0 auto;
+        }
+
+        .tax-ai {
+            background: #eff6ff;
+            border: 2px solid #93c5fd;
+        }
+
+        .tax-ml {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            margin-top: 0.75rem;
+        }
+
+        .tax-dl {
+            background: #f5f3ff;
+            border: 2px solid #c4b5fd;
+            margin-top: 0.75rem;
+        }
+
+        .tax-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        .tax-desc { font-size: 0.78rem; color: var(--text-dark); margin: 0.25rem 0 0; }
+
+        /* ── Challenge grid ── */
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.9rem;
+            margin: 1.25rem 0;
+        }
+
+        .challenge-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.9rem 1rem;
+            background: white;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .challenge-num {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .challenge-card .ch-title { font-weight: 700; font-size: 0.88rem; color: var(--text-dark); }
+        .challenge-card .ch-body  { font-size: 0.8rem; color: var(--text-light); margin-top: 0.15rem; }
+
+        /* ── Pipeline steps ── */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin: 1.25rem 0;
+            justify-content: center;
+        }
+
+        .pipe-step {
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .pipe-arrow {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            padding: 0 0.1rem;
+        }
+
+        /* ── MSE table ── */
+        .mse-table-wrap { overflow-x: auto; margin: 1rem 0; }
+        table.mse-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .mse-table th {
+            background: var(--primary); color: white;
+            padding: 0.45rem 0.9rem; border: 1px solid #1d4ed8;
+            font-weight: 600; text-align: center;
+        }
+        .mse-table th:first-child { text-align: left; }
+        .mse-table td { padding: 0.4rem 0.9rem; border: 1px solid var(--border); text-align: center; }
+        .mse-table td:first-child { text-align: left; font-weight: 600; }
+        .mse-table tr.winner td { background: #f0fdf4; color: #166534; font-weight: 700; }
+        .mse-table tr.loser  td { color: var(--text-light); }
+
+        /* ── Side-by-side AI demo ── */
+        .ai-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .ai-compare .col-left {
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .ai-compare .col-right {
+            background: #f0f9ff;
+            border: 1px solid #7dd3fc;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .ai-compare .col-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.6rem;
+        }
+
+        .ai-compare .col-left  .col-title { color: var(--text-light); }
+        .ai-compare .col-right .col-title { color: #0284c7; }
+
+        /* ── Chart outer ── */
+        .chart-outer {
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.25rem 0;
+        }
+
+        /* ── Collapsible ── */
+        details {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        details summary {
+            padding: 1.1rem 0;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        details[open] summary {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Footer ── */
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.25rem;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            body { padding: 0.75rem; }
+            .container { padding: 1.5rem; }
+            .challenge-grid { grid-template-columns: 1fr; }
+            .ai-compare { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; padding: 1.5rem; }
+            .concept-check .options { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ══════════════════════════════════════════════════
+         HEADER
+    ══════════════════════════════════════════════════ -->
+    <header>
+        <div class="instructor-avatar">👨‍🏫</div>
+        <div class="header-text">
+            <h1>FINANCE 361 — Topic 14: Financial Machine Learning</h1>
+            <p class="instructor-name">Dr. Zicheng (Leo) Xiao</p>
+            <p class="course-meta">University of Auckland &mdash; FINANCE 361: Modern Investment Theory</p>
+        </div>
+    </header>
+
+    <!-- Intro -->
+    <section>
+        <p>Machine learning is transforming empirical finance. Once relegated to speculative papers in physics journals, ML methods now appear in the top finance journals and are standard tools at major asset management firms. This module gives you a practical introduction: what ML is, why it is genuinely hard to apply in finance, and what the landmark Gu, Kelly &amp; Xiu (2020) paper actually found. You will also run working ML code that downloads real financial data, trains five different models, and compares their out-of-sample accuracy.</p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 1: READINGS
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>1. Readings</h2>
+        <ul>
+            <li>
+                <strong>Required (up to Section 1.4, pp. 2223–2235):</strong>
+                Gu, Kelly &amp; Xiu (2020), "Empirical Asset Pricing via Machine Learning",
+                <em>Review of Financial Studies</em>, 33(5), 2223–2273.
+                <a href="https://dachxiu.chicagobooth.edu/download/ML.pdf" target="_blank" rel="noopener noreferrer">[PDF]</a>
+            </li>
+        </ul>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 2: AGENDA
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>2. What Are We Doing Today</h2>
+        <ul>
+            <li>A concise introduction to machine learning — what it is and what it is not</li>
+            <li>Why ML is uniquely challenging in the finance setting (9 reasons)</li>
+            <li>Working Python code: train five ML models on real factor data and compare predictions</li>
+            <li>A deep dive into the GKX (2020) paper — the benchmark study of ML in asset pricing</li>
+        </ul>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 3: WHAT IS MACHINE LEARNING?
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>3. What Is Machine Learning?</h2>
+
+        <p>Three terms are often used interchangeably but are not the same:</p>
+
+        <!-- ML Taxonomy nested boxes -->
+        <div class="ml-taxonomy">
+            <div class="tax-ring tax-ai">
+                <div class="tax-label" style="color:#1d4ed8;">🤖 Artificial Intelligence (AI)</div>
+                <div class="tax-desc">The science of creating systems that exhibit aspects of intelligence — reasoning, perception, language, problem-solving.</div>
+                <div class="tax-ring tax-ml" style="margin: 0.75rem auto 0;">
+                    <div class="tax-label" style="color:#166534;">⚙️ Machine Learning (ML)</div>
+                    <div class="tax-desc">A branch of AI. Models that <em>learn directly from data</em> without being explicitly programmed with rules.</div>
+                    <div class="tax-ring tax-dl" style="margin: 0.75rem auto 0;">
+                        <div class="tax-label" style="color:#5b21b6;">🧠 Deep Learning (DL)</div>
+                        <div class="tax-desc">A branch of ML using multi-layer neural networks. Powers modern image recognition, LLMs, etc.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p style="font-size:0.82rem; color:var(--text-light); text-align:center; margin-top:0.3rem;">AI ⊃ ML ⊃ Deep Learning. Each inner ring is a specialisation of the outer one.</p>
+
+        <div class="info-box">
+            <strong>Is AI "intelligent"?</strong> The question of whether machines truly <em>understand</em> has been debated for decades. A practical answer: DALL-E (OpenAI, 2021) could produce a convincing image of "a baby daikon radish in a tutu walking a dog" — an object combination that has never appeared in a photograph. Producing that image requires something that functions like understanding of composition, anatomy, and style. Whether or not it is "true" understanding is a philosophical debate; the practical capability is not in doubt.
+        </div>
+
+        <div class="think-first-box">
+            🤔 <strong>Think First:</strong> Before reading on — in one sentence, what do you think is the most important difference between a traditional statistical model (like OLS regression) and a machine learning model? Write your answer before continuing.
+        </div>
+
+        <details>
+            <summary>Key distinction: model specification vs. data-driven learning</summary>
+            <p>A traditional model like OLS requires the researcher to <strong>specify the model</strong>: which variables to include, what functional form (linear, log, quadratic), which interactions. The model is then estimated given that fixed structure.</p>
+            <p>An ML model allows the data to determine the functional form. A decision tree, for instance, will discover its own non-linear breakpoints. A neural network discovers its own feature representations through multiple layers of transformation. The researcher still makes design choices (architecture, regularisation), but the model has far greater freedom to fit patterns in the data.</p>
+            <p><strong>The cost:</strong> this flexibility makes ML models much more prone to <em>overfitting</em> — fitting the noise in training data rather than the true signal.</p>
+        </details>
+
+        <div class="concept-check" id="cc1">
+            <p>🧠 Concept Check: Which statement best describes the relationship between AI, ML, and Deep Learning?</p>
+            <div class="options">
+                <button onclick="checkAnswer('cc1', this, false)">A. They are three separate, unrelated fields that sometimes collaborate.</button>
+                <button onclick="checkAnswer('cc1', this, false)">B. Deep Learning is the most general field; ML and AI are subsets of it.</button>
+                <button onclick="checkAnswer('cc1', this, true)">C. AI is the broadest field; ML is a subfield of AI; Deep Learning is a subfield of ML that uses multi-layer neural networks.</button>
+                <button onclick="checkAnswer('cc1', this, false)">D. AI and ML are the same thing; Deep Learning is unrelated.</button>
+            </div>
+            <div id="cc1-feedback" class="answer" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 4: ML AND RETURN PREDICTABILITY
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>4. Machine Learning and Return Predictability</h2>
+
+        <p>Applying ML to predict returns is not new — books on the topic were published in the 1990s. What <em>is</em> new is the sudden success of ML in domains like computer vision and NLP, which has led people to ask: "Why don't we use this to predict returns — and become rich?"</p>
+
+        <div class="think-first-box">
+            🤔 <strong>Think First:</strong> Before reading the 9 challenges below, list 3 reasons why predicting stock returns with ML might be harder than predicting, say, tomorrow's weather. Write your answers before continuing.
+        </div>
+
+        <p>There are at least 9 structural reasons why finance is a uniquely difficult domain for ML:</p>
+
+        <div class="challenge-grid">
+            <div class="challenge-card">
+                <div class="challenge-num">1</div>
+                <div>
+                    <div class="ch-title">Extreme Noise</div>
+                    <div class="ch-body">The signal-to-noise ratio in asset returns is approximately <strong>0.03</strong> — far lower than almost any other ML application domain. There is almost no signal to find.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">2</div>
+                <div>
+                    <div class="ch-title">Reflexivity</div>
+                    <div class="ch-body">When you trade on a model, you directly change the data-generating process (DGP). The market adapts, making historical patterns increasingly useless. Soros calls this <em>reflexivity</em>; statisticians call it non-stationarity.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">3</div>
+                <div>
+                    <div class="ch-title">Zero-Sum Game</div>
+                    <div class="ch-body">Short-term trading is a zero-sum game. Every dollar you profit is a dollar someone else loses. This creates a never-ending arms race — unless you are Renaissance Capital.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">4</div>
+                <div>
+                    <div class="ch-title">Black Swans</div>
+                    <div class="ch-body">Financial returns exhibit fat tails — unusually extreme events are unusually common. Most ML models assume well-behaved distributions; tail risk breaks them catastrophically.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">5</div>
+                <div>
+                    <div class="ch-title">Finite Data + Overfitting</div>
+                    <div class="ch-body">Financial data arrives at a finite rate (one month per month). You cannot run randomised experiments. Data mining and overfitting cannot be controlled — see also Challenge 2.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">6</div>
+                <div>
+                    <div class="ch-title">No Experiments Allowed</div>
+                    <div class="ch-body">Regulators interpret deliberate market "experiments" as manipulation. You cannot run A/B tests on trading strategies in the way you can run clinical trials for a drug.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">7</div>
+                <div>
+                    <div class="ch-title">Time Decay of Strategies</div>
+                    <div class="ch-body">By the time you have enough data to confirm a strategy is significantly profitable, it has almost certainly already been discovered and arbitraged away by larger, faster players.</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">8</div>
+                <div>
+                    <div class="ch-title">Commoditized Tools</div>
+                    <div class="ch-body">The best ML frameworks (PyTorch, TensorFlow, scikit-learn) are open-source and free. Market data is available from standard providers. What, exactly, is your competitive edge?</div>
+                </div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-num">9</div>
+                <div>
+                    <div class="ch-title">Talent Arms Race</div>
+                    <div class="ch-body">Average ML skills are useless in a zero-sum game. Any excess returns will be spent on retaining the best ML talent money can buy — a cost that erodes the advantage.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="danger-box">
+            ⚠️ <strong>But here's the catch:</strong> Despite all of the above, workers who can use AI will replace workers who cannot. The goal of this module is not to train you to beat Renaissance Capital — it is to ensure you can understand, critique, and apply ML methods when they are relevant. That is a career-defining skill in 2025 and beyond.
+        </div>
+
+        <div class="concept-check" id="cc2">
+            <p>🧠 Concept Check: The signal-to-noise ratio in monthly stock returns is approximately 0.03. Which of the following best interprets this number?</p>
+            <div class="options">
+                <button onclick="checkAnswer('cc2', this, false)">A. Only 3% of stocks earn positive returns in any given month.</button>
+                <button onclick="checkAnswer('cc2', this, true)">B. The predictable component of returns (the "signal") represents only about 3% of total variation; 97% is noise that no model can predict.</button>
+                <button onclick="checkAnswer('cc2', this, false)">C. ML models achieve an R² of 0.03 on average for stock return prediction.</button>
+                <button onclick="checkAnswer('cc2', this, false)">D. At least 3% of trading strategies produce statistically significant alphas.</button>
+            </div>
+            <div id="cc2-feedback" class="answer" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 5: ACTUALLY DOING ML
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>5. Actually Doing ML</h2>
+
+        <p>In principle, ML can be implemented in any Turing-complete language. In practice, the most powerful ML frameworks — PyTorch, TensorFlow, scikit-learn, XGBoost — require Python. Python is the <em>lingua franca</em> of ML.</p>
+
+        <div class="info-box">
+            <strong>A note on Python:</strong> Python was named after the Monty Python BBC comedy programme (not the snake). It was created by Dutch mathematician Guido van Rossum in the late 1980s. It is often described as "easy to learn", which is true for simple programs — but the full language is one of the most sophisticated programming languages in existence, supporting procedural, object-oriented, and functional paradigms.
+        </div>
+
+        <h3>The ML Pipeline</h3>
+
+        <p>Every ML project follows a common structure. Understanding this pipeline is more important than knowing any specific algorithm:</p>
+
+        <div class="pipeline">
+            <div class="pipe-step">1. Load Data</div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">2. Engineer Features</div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">3. Train / Test Split</div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">4. Fit Model</div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">5. Predict on Test</div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step">6. Evaluate (MSE / R²)</div>
+        </div>
+
+        <p>The critical rule: <strong>the model never sees test data during training</strong>. If test data "leaks" into training (e.g. through normalisation using the full dataset), the evaluation is invalid. In finance, this is analogous to the look-ahead bias problem from the sorted portfolio methodology.</p>
+
+        <h3>The Bias-Variance Tradeoff</h3>
+
+        <p>The central challenge in supervised ML is the <strong>bias-variance tradeoff</strong>:</p>
+
+        <div class="math-box">
+            $$ \underbrace{\mathbb{E}\left[(\hat{y} - y)^2\right]}_{\text{Expected test error}} = \underbrace{\text{Bias}^2}_{\text{underfitting}} + \underbrace{\text{Variance}}_{\text{overfitting}} + \underbrace{\sigma^2_\varepsilon}_{\text{irreducible}} $$
+        </div>
+
+        <ul>
+            <li><strong>Bias:</strong> Error from overly simplistic assumptions. A linear model fit to genuinely non-linear data has high bias. <em>Underfitting.</em></li>
+            <li><strong>Variance:</strong> Error from excessive sensitivity to small fluctuations in training data. A deeply grown decision tree memorises training noise. <em>Overfitting.</em></li>
+            <li><strong>Irreducible error (\(\sigma^2_\varepsilon\)):</strong> Noise inherent in the data that no model can eliminate. In finance, this is the dominant component.</li>
+        </ul>
+
+        <div class="chart-outer">
+            <canvas id="bvChart" style="max-height: 280px;"></canvas>
+            <p style="font-size:0.75rem; color:var(--text-light); margin-top:0.75rem; text-align:center;">
+                Bias-variance tradeoff. Training error (blue) decreases monotonically with model complexity. Test error (red) follows a U-shape — the optimal model sits in the valley. Irreducible noise is the grey dashed floor.
+            </p>
+        </div>
+
+        <div class="warning-box">
+            📌 <strong>Finance context:</strong> Because the signal-to-noise ratio in finance is ~0.03, the "optimal complexity" point is far to the left of the chart — very simple models. Highly complex deep neural networks will overfit financial data catastrophically unless they are heavily regularised (e.g., dropout, early stopping, L2 penalties).
+        </div>
+
+        <h3>A Complete 27-Line Python ML Example</h3>
+
+        <p>The following program illustrates the entire ML pipeline — downloading real data, training five different models, and comparing their out-of-sample accuracy — in under 30 lines of Python.</p>
+
+        <p><strong>Task:</strong> Predict next month's market excess return (\(R^{\text{MKT}}_{t+1}\)) using the current month's HXZ q5 factors (\(R^{\text{MKT}}_t, R^{\text{ME}}_t, R^{\text{IA}}_t, R^{\text{ROE}}_t, R^{\text{EG}}_t\)) plus the risk-free rate (\(R^F_t\)).</p>
+
+        <div class="think-first-box">
+            🤔 <strong>Think First:</strong> Five models are about to compete: OLS, Ridge regression, a Decision Tree, Gradient Boosting, and a Neural Network. Rank them 1–5 from lowest to highest expected MSE (best to worst). Write your prediction before scrolling to the results.
+        </div>
+
+        <div class="code-container">
+<pre><code class="language-python">import pandas as pd
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import mean_squared_error
+
+# ── 1. Download monthly q5 factor data from global-q.org ────────────────────
+url = ("http://global-q.org/uploads/1/2/2/6/122679606/"
+       "q5_factors_monthly_2019a.csv")
+df = pd.read_csv(url)
+print("Columns:", list(df.columns))
+
+# ── 2. Target: next-month market return ──────────────────────────────────────
+df["R_FWD_MKT"] = df["R_MKT"].shift(-1)
+
+# ── 3. Train / Test split (pre-2000 = train; 2000+ = test) ──────────────────
+D_train = df[df["year"] < 2000].dropna()
+D_test  = df[df["year"] >= 2000].dropna()
+
+# ── 4. Separate features (X) from target (y) ────────────────────────────────
+drop_cols = ["R_FWD_MKT", "year", "month"]
+y_train, y_test = D_train["R_FWD_MKT"], D_test["R_FWD_MKT"]
+X_train = D_train.drop(columns=drop_cols)
+X_test  = D_test.drop(columns=drop_cols)
+
+# ── 5. Define five models ────────────────────────────────────────────────────
+models = {
+    "OLS":       LinearRegression(),
+    "Ridge":     Ridge(alpha=2),
+    "Tree":      DecisionTreeRegressor(random_state=0),
+    "GBM":       GradientBoostingRegressor(random_state=0, n_estimators=10),
+    "NeuralNet": MLPRegressor(random_state=0, early_stopping=True),
+}
+
+# ── 6. Train → predict → report MSE ─────────────────────────────────────────
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+    mse   = mean_squared_error(y_test, preds)
+    print(f"{name:12s}  MSE = {mse:.2f}")
+</code></pre>
+        </div>
+
+        <h3>Model Output</h3>
+
+        <p>Running the code above produces the following results (your figures may differ slightly depending on package versions):</p>
+
+        <div class="mse-table-wrap">
+            <table class="mse-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Type</th>
+                        <th>MSE (out-of-sample)</th>
+                        <th>Rank</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="winner">
+                        <td>GBM</td>
+                        <td>Ensemble (gradient boosted trees)</td>
+                        <td>18.41</td>
+                        <td>🥇 Best</td>
+                    </tr>
+                    <tr>
+                        <td>Ridge</td>
+                        <td>Linear (regularised OLS)</td>
+                        <td>19.39</td>
+                        <td>2nd</td>
+                    </tr>
+                    <tr>
+                        <td>OLS</td>
+                        <td>Linear (ordinary least squares)</td>
+                        <td>19.45</td>
+                        <td>3rd</td>
+                    </tr>
+                    <tr>
+                        <td>NeuralNet</td>
+                        <td>Multilayer perceptron</td>
+                        <td>19.82</td>
+                        <td>4th</td>
+                    </tr>
+                    <tr class="loser">
+                        <td>Tree</td>
+                        <td>Single decision tree</td>
+                        <td>37.14</td>
+                        <td>❌ Worst (overfit)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p style="font-size:0.78rem; color:var(--text-light);">MSE = Mean Squared Error on out-of-sample test data (year ≥ 2000). Lower is better. Note: sklearn's <code>mean_squared_error</code> returns MSE by default, not RMSE.</p>
+
+        <div class="chart-outer">
+            <canvas id="mseChart" style="max-height: 260px;"></canvas>
+            <p style="font-size:0.75rem; color:var(--text-light); margin-top:0.5rem; text-align:center;">
+                Out-of-sample MSE for five models. GBM achieves the lowest MSE; the unregularised single Decision Tree overfits severely.
+            </p>
+        </div>
+
+        <div class="result-box">
+            <strong>Interpretation:</strong>
+            <ul style="margin-bottom:0;">
+                <li><strong>GBM wins</strong> — gradient boosting can capture mild non-linearities while controlling overfitting through the ensemble mechanism.</li>
+                <li><strong>Decision Tree loses badly</strong> — a single deep tree memorises the training set; its test MSE is nearly double everyone else's. This is a textbook example of overfitting.</li>
+                <li><strong>Ridge slightly beats OLS</strong> — even mild regularisation (penalising large coefficients) helps slightly, consistent with the high-noise environment.</li>
+                <li><strong>All models are bad in absolute terms</strong> — the MSEs are enormous. This is a toy example with very limited features and only ~600 observations.</li>
+            </ul>
+        </div>
+
+        <h3>What We Did Not Do Properly</h3>
+
+        <div class="warning-box">
+            ⚠️ <strong>This is a toy example.</strong> A real ML study would also:
+            <ul style="margin-top: 0.5rem; margin-bottom: 0;">
+                <li><strong>Tune hyperparameters</strong> on a separate <em>validation set</em> (not the test set). E.g., the <code>alpha</code> in Ridge and <code>n_estimators</code> in GBM should be chosen by cross-validation.</li>
+                <li><strong>Standardise inputs</strong> before feeding them to the neural network (mean = 0, std = 1). We skipped this.</li>
+                <li><strong>Use many more features</strong> — GKX (2020) use 94 stock-level characteristics. We used just 5 factor returns.</li>
+                <li><strong>Use many more observations</strong> — ML works best with thousands or millions of observations. We have ~600 monthly data points.</li>
+            </ul>
+        </div>
+
+        <!-- AI Demo -->
+        <div class="ai-demo-box">
+            <p style="margin:0 0 0.75rem;"><span class="ai-tag">AI DEMO</span> <strong>Format B — Side-by-Side Evaluation</strong></p>
+            <p style="font-size:0.88rem; margin:0 0 0.75rem;">Read the question below. <strong>Before</strong> looking at the AI's answer, write your own 2-sentence response. Then evaluate whether the AI is correct, partially correct, or misleading.</p>
+            <div class="ai-compare">
+                <div class="col-left">
+                    <div class="col-title">Your Question</div>
+                    <p style="font-size:0.88rem; margin:0;">"Why does gradient boosting tend to outperform OLS for predicting stock returns, given that GBM is a much more complex model and complex models tend to overfit?"</p>
+                </div>
+                <div class="col-right">
+                    <div class="col-title">🤖 AI-Generated Answer (Claude)</div>
+                    <p style="font-size:0.82rem; margin:0;">Gradient boosting outperforms OLS in this setting because it can capture <em>mild non-linearities and interaction effects</em> that OLS cannot. Unlike a single deep decision tree (which overfits severely), GBM builds many shallow trees sequentially, each correcting the residual errors of the last. The ensemble structure limits variance — shallow trees have low variance individually; the boosting corrects bias. Ridge regression beats plain OLS for the same reason: regularisation penalises extreme coefficients, keeping variance low in a high-noise environment. GBM essentially builds in a form of regularisation through the combination of shallow trees and learning rate shrinkage.</p>
+                </div>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-light); margin:0.75rem 0 0;">📝 <strong>Reflection:</strong> Is the AI's answer consistent with the MSE table above? Does it correctly distinguish between GBM and a single decision tree? What did it omit?</p>
+        </div>
+
+        <!-- AI Critique Exercise -->
+        <!-- AI CRITIQUE EXERCISE -->
+        <div class="ai-critique-box">
+            <p style="margin:0 0 0.6rem;"><strong>🔍 AI Critique Exercise</strong></p>
+            <p style="font-size:0.88rem; margin:0 0 0.75rem;">A student asked an AI: <em>"My decision tree has training R² = 0.91 and test R² = 0.02. What is wrong?"</em> The AI responded:</p>
+            <blockquote style="background: #fff; border-left: 3px solid #fca5a5; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin: 0.5rem 0; font-style: italic; font-size:0.88rem;">
+                "Decision trees perform poorly on financial data because they use non-parametric methods. Non-parametric methods assume nothing about the distribution of the data, which makes them less effective for time-series problems where past patterns tend to repeat."
+            </blockquote>
+            <p style="font-size:0.88rem; margin:0.5rem 0 0;"><strong>Identify what is wrong with this answer.</strong> What is the actual explanation for the gap between training and test R², and what would you do to fix it?</p>
+            <details style="margin-top:0.75rem;">
+                <summary style="color:var(--accent-red);">Reveal correct answer</summary>
+                <p style="font-size:0.88rem;">The AI's explanation is <strong>wrong</strong>. The problem is <strong>overfitting</strong>, not "non-parametric methods being unsuitable for time series". The symptoms are classic: near-perfect training performance (R² = 0.91) but near-zero test performance (R² = 0.02), which means the tree has memorised the training noise rather than learned a generalisable pattern.</p>
+                <p style="font-size:0.88rem;">Random forests and gradient boosted trees are also non-parametric and ensemble methods built from decision trees — and they work quite well on financial data. The issue is not the non-parametric nature, but that an <em>unconstrained single tree</em> grows until every training observation is perfectly classified, leaving no room for generalisation.</p>
+                <p style="font-size:0.88rem;"><strong>Fixes:</strong> (1) Constrain <code>max_depth</code> (e.g., to 3–5). (2) Use cross-validation to select the depth. (3) Use an ensemble method like random forests or GBM instead of a single tree.</p>
+            </details>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 6: GU, KELLY AND XIU (2020)
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <h2>6. Gu, Kelly &amp; Xiu (2020) — "Empirical Asset Pricing via Machine Learning"</h2>
+
+        <blockquote style="border-left: 4px solid var(--border); margin: 1.25rem 0; padding: 0.75rem 1.5rem; font-style: italic; color: var(--text-dark); background: var(--bg-gray); border-radius: 0 8px 8px 0;">
+            "We perform a comparative analysis of machine learning methods for the canonical problem of empirical asset pricing: measuring asset risk premiums. We demonstrate large economic gains to investors using machine learning forecasts, in some cases doubling the performance of leading regression-based strategies from the literature. We identify the best-performing methods (trees and neural networks) and trace their predictive gains to allowing non-linear predictor interactions missed by other methods. All methods agree on the same set of dominant predictive signals, a set that includes variations on momentum, liquidity, and volatility."
+            <br><br>— Gu, Kelly &amp; Xiu (2020, <em>Review of Financial Studies</em>)
+        </blockquote>
+
+        <h3>Why This Paper Matters</h3>
+
+        <p>Predicting financial returns with ML is not new — books on "neural networks in the capital markets" appeared in the 1990s. The problem with earlier work was that it lacked economic credibility: simply forecasting returns was not sufficient for publication in top finance journals. GKX solved this by:</p>
+
+        <ul>
+            <li><strong>Framing the question in the language of finance:</strong> "Measuring asset risk premiums" rather than "predicting future returns." A subtle but important distinction.</li>
+            <li><strong>Using proper ML methodology:</strong> Rigorous train/validation/test splits, hyperparameter tuning on a hold-out validation set, and standardised inputs.</li>
+            <li><strong>Providing economic interpretation:</strong> Measuring which characteristics matter most via variable importance scores.</li>
+            <li><strong>Covering a range of methods:</strong> OLS, Ridge, LASSO, Elastic Net, PCR, PLS, GBRT, Random Forests, Neural Networks — a genuine horse race.</li>
+        </ul>
+
+        <h3>Key Findings</h3>
+
+        <div class="think-first-box">
+            🤔 <strong>Think First:</strong> From the abstract alone, predict the paper's top 3 findings. Write them down before reading the list below.
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0;">
+            <div class="result-box" style="margin:0;">
+                <strong>✅ ML beats OLS</strong><br>
+                <p style="font-size:0.88rem; margin:0.4rem 0 0;">ML methods outperform traditional regression-based strategies for return prediction out-of-sample. Gains are economically large — sometimes doubling Sharpe ratios.</p>
+            </div>
+            <div class="result-box" style="margin:0;">
+                <strong>✅ Non-linearity matters</strong><br>
+                <p style="font-size:0.88rem; margin:0.4rem 0 0;">The predictive advantage of ML over OLS comes primarily from capturing <strong>non-linear predictor interactions</strong> that linear models miss by design.</p>
+            </div>
+            <div class="result-box" style="margin:0;">
+                <strong>✅ Best methods: Trees &amp; NNs</strong><br>
+                <p style="font-size:0.88rem; margin:0.4rem 0 0;">Gradient boosted regression trees (GBRT) and neural networks consistently outperform linear methods. Ridge and LASSO are better than plain OLS but fall short of the best ML methods.</p>
+            </div>
+            <div class="result-box" style="margin:0;">
+                <strong>✅ Dominant signals: MOM, LIQ, VOL</strong><br>
+                <p style="font-size:0.88rem; margin:0.4rem 0 0;">All methods agree: the most important predictors involve variations on <strong>momentum, liquidity, and volatility</strong>. This is consistent with anomaly literature (Topic 13).</p>
+            </div>
+        </div>
+
+        <h3>GKX vs. Our Toy Example</h3>
+
+        <div style="overflow-x:auto; margin: 1rem 0;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+                <thead>
+                    <tr>
+                        <th style="background:var(--primary); color:white; padding:0.5rem 0.9rem; border:1px solid #1d4ed8; text-align:left;">Dimension</th>
+                        <th style="background:var(--primary); color:white; padding:0.5rem 0.9rem; border:1px solid #1d4ed8; text-align:center;">Our Toy Example</th>
+                        <th style="background:var(--primary); color:white; padding:0.5rem 0.9rem; border:1px solid #1d4ed8; text-align:center;">GKX (2020)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); font-weight:600;">Observations</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">~600 monthly</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">~1 million stock-months</td></tr>
+                    <tr style="background:var(--bg-gray);"><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); font-weight:600;">Features (X)</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">5 macro factors</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">94 firm characteristics</td></tr>
+                    <tr><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); font-weight:600;">Target (y)</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">Market-level return</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">Individual stock returns</td></tr>
+                    <tr style="background:var(--bg-gray);"><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); font-weight:600;">Hyperparameter tuning</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">None</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">Full cross-validation</td></tr>
+                    <tr><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); font-weight:600;">Input standardisation</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">No</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">Yes (rank-transform)</td></tr>
+                    <tr style="background:var(--bg-gray);"><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); font-weight:600;">Interpretation</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">None</td><td style="padding:0.4rem 0.9rem; border:1px solid var(--border); text-align:center;">Variable importance, SDF</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="concept-check" id="cc3">
+            <p>🧠 Concept Check: GKX (2020) find that ML methods outperform OLS primarily because:</p>
+            <div class="options">
+                <button onclick="checkAnswer('cc3', this, false)">A. ML models use more data — they simply process more stock-months than OLS.</button>
+                <button onclick="checkAnswer('cc3', this, true)">B. ML methods capture non-linear predictor interactions that linear OLS models miss by construction.</button>
+                <button onclick="checkAnswer('cc3', this, false)">C. ML models do not require the standard errors to be corrected for heteroskedasticity.</button>
+                <button onclick="checkAnswer('cc3', this, false)">D. ML models automatically avoid data mining because they use cross-validation.</button>
+            </div>
+            <div id="cc3-feedback" class="answer" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 7: BEYOND THE TEXTBOOK
+    ══════════════════════════════════════════════════ -->
+    <section>
+        <details>
+            <summary>📚 Beyond the Textbook — Where This Research Is Heading</summary>
+
+            <h3>Seminal Papers</h3>
+            <ul>
+                <li>
+                    <strong>Gu, Kelly &amp; Xiu (2021)</strong>, "Autoencoder Asset Pricing Models",
+                    <em>Journal of Econometrics</em>.
+                    Extends GKX to learn latent risk factors directly from data using deep autoencoders — replacing the hand-crafted FF5/HXZ factors with data-learned representations.
+                    <a href="https://www.sciencedirect.com/science/article/pii/S0304407620301998" target="_blank" rel="noopener noreferrer">[Link]</a>
+                </li>
+                <li>
+                    <strong>Kozak, Nagel &amp; Santosh (2020)</strong>, "Shrinking the Cross-Section",
+                    <em>Journal of Financial Economics</em>.
+                    Shows that the dozens of factors in the zoo can be compressed to a few principal components using Bayesian regularisation — bridging ML and structural asset pricing.
+                    <a href="https://www.sciencedirect.com/science/article/pii/S0304405X19302478" target="_blank" rel="noopener noreferrer">[Link]</a>
+                </li>
+                <li>
+                    <strong>Chen, Pelger &amp; Zhu (2024)</strong>, "Deep Learning in Asset Pricing",
+                    <em>Management Science</em>.
+                    Uses deep neural networks to learn the stochastic discount factor directly — a more theoretically grounded approach than the GKX prediction framework.
+                </li>
+            </ul>
+
+            <h3>Industry Practice</h3>
+            <ul>
+                <li>
+                    <strong>Two Sigma</strong> — quantitative hedge fund that pioneered systematic ML-based trading. Their blog posts and white papers are unusually informative for a hedge fund: <a href="https://www.twosigma.com/insights/" target="_blank" rel="noopener noreferrer">twosigma.com/insights</a>.
+                </li>
+                <li>
+                    <strong>Renaissance Technologies (Medallion Fund)</strong> — the best-performing investment fund in history, with annualised returns above 60% before fees for 30+ years. Widely believed to use proprietary ML and signal processing techniques. Very little is known publicly.
+                </li>
+                <li>
+                    <strong>Man AHL, WorldQuant, Acadian</strong> — other major quantitative managers with published research on factor models and systematic strategies.
+                </li>
+            </ul>
+
+            <h3>Leo's Research Connection</h3>
+            <div class="info-box" style="margin-top:0.75rem;">
+                <strong>NLP in Finance:</strong> My own research uses natural language processing (NLP) to extract information from financial text — earnings call transcripts, 10-K filings, news articles. Text-based factors have become an increasingly important part of the ML asset pricing toolkit. If you are interested in FinTech or textual analysis as a thesis or PhD topic, come and talk to me.
+            </div>
+        </details>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         COLAB SECTION
+    ══════════════════════════════════════════════════ -->
+    <section id="colab-section">
+        <h2>🐍 Run the Code in Google Colab</h2>
+
+        <p>The companion notebook lets you run all Python code from this topic interactively — no local installation required. It includes:</p>
+        <ul>
+            <li>A fully worked version of the 27-line ML example with clean sklearn code</li>
+            <li>Bias-variance tradeoff visualisation: train and test error curves as depth increases</li>
+            <li>Hyperparameter tuning with cross-validation (fixing the toy example)</li>
+            <li>A larger prediction task: predicting individual stock returns using momentum, size, and value signals</li>
+            <li>Variable importance plots: which features matter most for GBM?</li>
+        </ul>
+
+        <div style="background: var(--bg-gray); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin: 1.25rem 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <a id="colab-link-14"
+                   href="https://colab.research.google.com/github/Leonop/FINANCE-361-S1-2026/blob/main/week08_topic13-14/FIN361_Topic14_Financial_ML.ipynb"
+                   target="_blank" rel="noopener noreferrer"
+                   style="display:inline-flex; align-items:center; gap:0.5rem; background:#f9ab00; color:#1a1a1a;
+                          font-weight:700; font-size:0.95rem; padding:0.6rem 1.2rem; border-radius:6px;
+                          text-decoration:none;">
+                    <img src="https://colab.research.google.com/assets/colab-badge.svg"
+                         alt="Open in Colab" style="height:20px; vertical-align:middle;">
+                    &nbsp;Open Notebook in Colab
+                </a>
+                <a href="FIN361_Topic14_Financial_ML.ipynb" download
+                   style="display:inline-flex; align-items:center; gap:0.5rem; background:white;
+                          border:1px solid var(--border); color:var(--primary); font-weight:600;
+                          font-size:0.9rem; padding:0.6rem 1.1rem; border-radius:6px; text-decoration:none;">
+                    ⬇ Download .ipynb
+                </a>
+            </div>
+
+            <!-- Link-setter: paste a GitHub or Colab URL to update the button above -->
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem; flex-wrap:wrap;">
+                <input id="colab-input-14" type="url"
+                       placeholder="Paste GitHub or Colab URL here to activate the button…"
+                       style="flex:1; min-width:260px; padding:0.45rem 0.75rem; font-size:0.85rem;
+                              border:1px solid var(--border); border-radius:6px; font-family:inherit;">
+                <button onclick="setColabLink('colab-input-14','colab-link-14')"
+                        style="padding:0.45rem 1rem; background:var(--primary); color:white;
+                               border:none; border-radius:6px; font-size:0.85rem; font-weight:600;
+                               cursor:pointer; white-space:nowrap;">
+                    Set Link
+                </button>
+            </div>
+
+            <p style="font-size:0.8rem; color:var(--accent-amber); margin-top:0.9rem; margin-bottom:0;">
+                ⚠️ <strong>Notebook not yet uploaded.</strong>
+                Upload <code>FIN361_Topic14_Financial_ML.ipynb</code> to
+                <a href="https://github.com/Leonop/FINANCE-361-S1-2026/tree/main/week08_topic13-14"
+                   target="_blank" rel="noopener noreferrer" style="color:var(--primary);">
+                   week08_topic13-14/</a>
+                on GitHub — the Colab button above will then work automatically.
+                Or paste the Colab URL into the box above and click <strong>Set Link</strong>.
+            </p>
+        </div>
+
+        <details>
+            <summary>📋 How to activate the Colab link (GitHub method)</summary>
+            <ol style="font-size:0.88rem; line-height:1.9;">
+                <li>Upload <code>FIN361_Topic14_Financial_ML.ipynb</code> to the repository folder
+                    <a href="https://github.com/Leonop/FINANCE-361-S1-2026/tree/main/week08_topic13-14"
+                       target="_blank" rel="noopener noreferrer">week08_topic13-14/</a>.
+                </li>
+                <li>The Colab button above will resolve automatically to:<br>
+                    <code>https://colab.research.google.com/github/Leonop/FINANCE-361-S1-2026/blob/main/week08_topic13-14/FIN361_Topic14_Financial_ML.ipynb</code>
+                </li>
+                <li>Alternatively, paste any Colab share link into the input box above and click <strong>Set Link</strong> to override the URL for the current session.</li>
+            </ol>
+        </details>
+    </section>
+
+    <footer>
+        <p>FINANCE 361: Modern Investment Theory &mdash; University of Auckland</p>
+        <p>© Dr. Zicheng (Leo) Xiao &nbsp;|&nbsp; University of Auckland &nbsp;|&nbsp; FINANCE 361</p>
+    </footer>
+
+</div><!-- /.container -->
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+/* ── Bias-Variance Tradeoff Chart ──────────────────────────────────────── */
+const bvLabels    = ['1','2','3','4','5','6','7','8','9','10'];
+const trainErrors = [4.85, 3.72, 2.94, 2.35, 1.92, 1.61, 1.39, 1.22, 1.09, 1.00];
+const testErrors  = [5.10, 4.05, 3.35, 3.02, 2.95, 3.08, 3.42, 4.01, 4.92, 6.15];
+const irreducible = Array(10).fill(0.90);
+
+const bvCtx = document.getElementById('bvChart').getContext('2d');
+new Chart(bvCtx, {
+    type: 'line',
+    data: {
+        labels: bvLabels,
+        datasets: [
+            {
+                label: 'Training error',
+                data: trainErrors,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,0.08)',
+                borderWidth: 2.5,
+                pointRadius: 4,
+                tension: 0.35,
+                fill: false,
+            },
+            {
+                label: 'Test error',
+                data: testErrors,
+                borderColor: '#dc2626',
+                backgroundColor: 'rgba(220,38,38,0.08)',
+                borderWidth: 2.5,
+                pointRadius: 4,
+                tension: 0.35,
+                fill: false,
+            },
+            {
+                label: 'Irreducible noise',
+                data: irreducible,
+                borderColor: '#94a3b8',
+                borderDash: [6, 4],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                fill: false,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                title: { display: true, text: 'Model Complexity →' },
+                grid: { display: false }
+            },
+            y: {
+                title: { display: true, text: 'Prediction Error' },
+                min: 0, max: 7,
+            }
+        },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}`
+                }
+            },
+            annotation: {}
+        }
+    }
+});
+
+/* ── MSE Comparison Bar Chart ──────────────────────────────────────────── */
+const mseLabels = ['OLS', 'Ridge', 'Tree', 'GBM', 'NeuralNet'];
+const mseValues = [19.45, 19.39, 37.14, 18.41, 19.82];
+const mseColors = mseValues.map((v, i) => {
+    if (i === 3) return 'rgba(22,163,74,0.80)';   // GBM — winner (green)
+    if (i === 2) return 'rgba(220,38,38,0.75)';    // Tree — worst (red)
+    return 'rgba(37,99,235,0.70)';                 // others (blue)
+});
+
+const mseCtx = document.getElementById('mseChart').getContext('2d');
+new Chart(mseCtx, {
+    type: 'bar',
+    data: {
+        labels: mseLabels,
+        datasets: [{
+            label: 'Out-of-sample MSE',
+            data: mseValues,
+            backgroundColor: mseColors,
+            borderColor: mseColors.map(c => c.replace('0.70','1').replace('0.75','1').replace('0.80','1')),
+            borderWidth: 1,
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                title: { display: true, text: 'MSE (lower = better)' },
+                min: 0,
+                ticks: { callback: v => v.toFixed(0) }
+            },
+            x: { grid: { display: false } }
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => `MSE = ${ctx.parsed.y.toFixed(2)}`
+                }
+            }
+        }
+    }
+});
+
+/* ── Concept Checks ────────────────────────────────────────────────────── */
+const feedbacks = {
+    cc1: {
+        correct:   '✓ Correct! AI is the broadest umbrella. ML is the subfield that learns from data. Deep Learning is the subfield of ML using multi-layer neural networks — it is a specialisation, not a replacement.',
+        incorrect: 'Not quite. Think of nested circles: AI ⊃ ML ⊃ Deep Learning. AI is the most general; Deep Learning is the most specialised.'
+    },
+    cc2: {
+        correct:   '✓ Correct! A signal-to-noise ratio of ~0.03 means that only about 3% of the variation in monthly stock returns is predictable; the remaining 97% is pure noise. This is why even the best ML models achieve very low R² in finance.',
+        incorrect: 'Not quite. The signal-to-noise ratio refers to the fraction of total variance that is predictable. At 0.03, nearly all variation in returns is random noise — which is why predicting returns is so hard, even with ML.'
+    },
+    cc3: {
+        correct:   '✓ Correct! GKX trace the ML advantage to capturing non-linear and interaction effects. A linear model like OLS is by construction incapable of learning interactions unless you manually include interaction terms — and with 94 variables, there are thousands of possible interactions.',
+        incorrect: 'Not quite. GKX explicitly state their key finding: "predictive gains [are traced] to allowing non-linear predictor interactions missed by other methods." The gain is about flexibility of the functional form, not sample size or standard error correction.'
+    }
+};
+
+function checkAnswer(id, btn, isCorrect) {
+    const container = document.getElementById(id);
+    const feedback  = document.getElementById(id + '-feedback');
+    const fb = feedbacks[id];
+
+    container.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.cursor = 'default'; });
+
+    if (isCorrect) {
+        btn.style.background = '#f0fdf4';
+        btn.style.borderColor = '#16a34a';
+        btn.style.color = '#166534';
+        feedback.className = 'answer correct';
+        feedback.innerHTML = fb.correct;
+    } else {
+        btn.style.background = '#fff1f2';
+        btn.style.borderColor = '#dc2626';
+        btn.style.color = '#991b1b';
+        feedback.className = 'answer incorrect';
+        feedback.innerHTML = fb.incorrect;
+    }
+    feedback.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
